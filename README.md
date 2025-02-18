@@ -3,7 +3,10 @@ CourseTracker là một ứng dụng web quản lý các khóa học, giúp ngư
 
 Ứng dụng được xây dựng bằng Spring Boot ở backend và HTML, CSS, JavaScript ở frontend.
 
-## Tính nâng chính: 
+## Thông tin sinh viên: 
+- Họ và tên: Nguyễn Hà Linh 
+- MSSV: 22024505
+## Tính năng chính: 
 - Hiển thị danh sách khóa học.
 - Thêm mới khóa học.
 - Xóa khóa học.
