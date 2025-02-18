@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Course Tracker</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Course Name</th>
+                <th>Instructor</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+    </table>
+    
+    <div class="form-container">
+        <input type="text" id="courseName" placeholder="Course Name">
+        <input type="text" id="instructor" placeholder="Instructor">
+        <input type="text" id="email" placeholder="Email">
+        <button onclick="addCourse()">Add Course</button>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8080/";
+
+        // Fetch and display courses
+        function fetchCourses() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById("courseTableBody");
+                    tableBody.innerHTML = ""; // Clear previous data
+                    data.forEach(course => {
+    let row = `<tr>
+        <td>${course.id}</td>
+        <td>${course.courseName}</td>
+        <td>${course.instructor}</td>
+        <td>${course.email}</td>
+        <td>
+            <button onclick="deleteCourse(${course.id})">Delete</button>
+        </td>
+    </tr>`;
+    tableBody.innerHTML += row;
+});
+                })
+                .catch(error => console.error("Error fetching courses:", error));
+        }
+
+        // Add a new course
+        function addCourse() {
+            const courseName = document.getElementById("courseName").value;
+            const instructor = document.getElementById("instructor").value;
+            const email = document.getElementById("email").value;
+            
+            if (!courseName || !instructor || !email) {
+                alert("Please fill in all fields!");
+                return;
+            }
+        
+            fetch(API_URL + "save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    courseName: courseName,
+                    instructor: instructor,
+                    email: email 
+                })
+            })
+            .then(response => response.json())
+            .then(() => {
+                fetchCourses();
+                // Clear form
+                document.getElementById("courseName").value = "";
+                document.getElementById("instructor").value = "";
+                document.getElementById("email").value = "";
+            })
+            .catch(error => console.error("Error adding course:", error));
+        }
+        
+        function deleteCourse(id) {
+            fetch(`${API_URL}delete/${id}`, { 
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(() => fetchCourses())
+            .catch(error => console.error("Error deleting course:", error));
+        }
+
+        // Fetch courses on page load
+        document.addEventListener("DOMContentLoaded", fetchCourses);
+    </script>
+
+</body>
+</html>
